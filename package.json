@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "start": "npm run build && node dist/index.js",
+    "test": "ava",
+    "build": "babel src -d dist --presets latest"
   },
   "author": "cabtravis@gmail.com",
   "license": "MIT",
