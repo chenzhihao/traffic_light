@@ -1,12 +1,13 @@
-import {COLORS, DEFAULT_TRANSITION_TIME} from './constants';
+import {COLORS} from './constants';
 
 export default class Light {
   constructor (options = {}) {
-    const {transitionTime = DEFAULT_TRANSITION_TIME, initialColor = COLORS.RED, id = ''} = options;
-    this.transitionTime = transitionTime;
-    this.id = id;
+    const {initialColor = COLORS.RED} = options;
     this.onColorChangeCallbacksMap = new Map();
 
+    /*
+     make 'color' observable to implement an easy pub/sub pattern here
+     */
     Object.defineProperty(this, 'color', {
       get () {
         return this._color;
