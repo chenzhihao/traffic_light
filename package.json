@@ -6,13 +6,15 @@
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "test": "ava",
-    "build": "babel src -d dist --presets latest"
+    "build": "babel src -d dist --presets latest",
+    "watch": "ava -watch"
   },
   "author": "cabtravis@gmail.com",
   "license": "MIT",
   "devDependencies": {
     "ava": "^0.18.0",
     "babel-cli": "^6.18.0",
+    "babel-polyfill": "^6.23.0",
     "babel-preset-latest": "^6.16.0",
     "babel-register": "^6.18.0"
   },
@@ -27,9 +29,7 @@
     "failFast": true,
     "tap": true,
     "powerAssert": true,
-    "require": [
-      "babel-register"
-    ],
+    "require":  ["babel-register", "babel-polyfill"],
     "babel": "inherit"
   },
   "babel": {
