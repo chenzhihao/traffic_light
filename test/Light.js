@@ -1,5 +1,6 @@
 import test from 'ava';
-import Light, {COLORS} from '../src/Light';
+import Light from '../src/Light';
+import {COLORS} from '../src/constants';
 
 test('Light can be initialization with color', t => {
   const light = new Light({initialColor: COLORS.RED});

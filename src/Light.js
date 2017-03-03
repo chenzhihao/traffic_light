@@ -1,6 +1,4 @@
-export const COLORS = {RED: 'red', GREEN: 'green', YELLOW: 'yellow'};
-
-const DEFAULT_TRANSITION_TIME = 5000;
+import {COLORS, DEFAULT_TRANSITION_TIME} from './constants';
 
 export default class Light {
   constructor (options = {}) {
