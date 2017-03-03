@@ -5,15 +5,19 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && node dist/index.js",
-    "test": "ava",
+    "test": "ava --tap",
     "build": "babel src -d dist --presets latest",
-    "watch": "ava -watch"
+    "watch": "ava --tap -watch"
   },
   "author": "cabtravis@gmail.com",
   "license": "MIT",
+  "engines": {
+    "node": ">=7"
+  },
   "devDependencies": {
-    "ava": "^0.18.0",
+    "ava": "^0.18.2",
     "babel-cli": "^6.18.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-latest": "^6.16.0",
     "babel-register": "^6.18.0"
@@ -29,12 +33,26 @@
     "failFast": true,
     "tap": true,
     "powerAssert": true,
-    "require":  ["babel-register", "babel-polyfill"],
+    "require": [
+      "babel-register"
+    ],
     "babel": "inherit"
   },
   "babel": {
+    "plugins": [
+      [
+        "transform-runtime",
+        {
+          "polyfill": false,
+          "regenerator": true
+        }
+      ]
+    ],
     "presets": [
       "latest"
     ]
+  },
+  "dependencies": {
+    "babel-runtime": "^6.23.0"
   }
 }
