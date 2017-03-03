@@ -52,4 +52,14 @@ export default class Light {
     this.color = COLORS.GREEN;
     return this;
   }
+
+  turn (color) {
+    if (Object.values(COLORS).indexOf(color) < 0) {
+      throw new Error('this color not existing: ' + color);
+    }
+
+    const camelCaseColor = color.charAt(0).toUpperCase() + color.substr(1);
+
+    return this[`turn${camelCaseColor}`]();
+  }
 }

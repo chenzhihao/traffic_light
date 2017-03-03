@@ -19,6 +19,18 @@ test('Light can change to red, yellow, green', t => {
   t.is(light.color, COLORS.YELLOW);
 });
 
+test('Light can turn to specify color', t=> {
+  const light = new Light();
+  light.turn(COLORS.RED);
+  t.is(light.color, COLORS.RED);
+
+  light.turn(COLORS.GREEN);
+  t.is(light.color, COLORS.GREEN);
+
+  light.turn(COLORS.YELLOW);
+  t.is(light.color, COLORS.YELLOW);
+});
+
 test.cb('Change Light color will trigger callback', t => {
   const light = new Light({initialColor: COLORS.YELLOW});
 
