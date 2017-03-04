@@ -3,7 +3,7 @@ import {COLORS} from './constants';
 import Timer from './Timer';
 import LightController from './LightController';
 
-const inputArgs = {startTimeStr: process.argv[2], durationInSec: process.argv[3]};
+const inputArgs = {startTimeStr: process.argv[2], durationInSec: process.argv[3] && Number(process.argv[3])};
 const {startTimeStr = '00:00:00', durationInSec = 1800} = inputArgs;
 
 const northSouthLight = new Light({initialColor: COLORS.RED});

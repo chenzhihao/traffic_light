@@ -8,8 +8,8 @@ class Timer {
       throw new Error('Time format should be HH:MM:SS, from 00:00:00 to 23:59:59');
     }
 
-    if (Number.isInteger(durationInSec) || durationInSec <= 0) {
-      new Error('Duration seconds must be positive integer number');
+    if (!Number.isInteger(durationInSec) || durationInSec <= 0) {
+      throw new Error('Duration seconds must be positive integer number');
     }
 
     /**
