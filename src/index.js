@@ -1,7 +1,7 @@
-import Light from './src/Light';
-import {COLORS} from './src/constants';
-import Timer from './src/Timer';
-import LightController from './src/LightController';
+import Light from './Light';
+import {COLORS} from './constants';
+import Timer from './Timer';
+import LightController from './LightController';
 
 let startTimeStr = process.argv[2] || '00:00:00';
 let durationInSec = process.argv[3] || 1800;
