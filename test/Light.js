@@ -42,10 +42,10 @@ test.cb('Change Light color will trigger callback', t => {
   light.turnRed();
 });
 
-test.cb('Not Change Light color will trigger callback', t => {
+test.cb('Not Change Light color will not trigger callback', t => {
   const light = new Light({initialColor: COLORS.YELLOW});
 
-  light.onColorChange(function (color) {
+  light.onColorChange(function () {
     t.fail('should not be triggered');
   });
 
