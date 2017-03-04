@@ -23,3 +23,21 @@ Create a repo on bitbucket/github and provide the link as well as instructions o
 * The two lights are orthogonal, which means when Light(N, S) begin to turn from Red to Green, the light(E, W) should begin to turn from Green to Red.
 
 ## How to run
+
+```shell
+// required node version >= 7
+npm install
+
+// use default start time at 00:00:00 (HH:MM:SS), default duration 1800 seconds(i.e. 30 minutes).
+npm start
+
+// Or specify start time, here is 14:30:00
+npm start 14:30:00
+
+// or speicfy the duration in seconds, here is 10800 seconds(i.e. 3 hours):
+npm start 00:00:00 10800
+
+// run test:
+npm run test
+
+```
