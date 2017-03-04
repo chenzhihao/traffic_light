@@ -18,7 +18,7 @@ class LightController {
     this.timer = timer;
     this.durationInSec = durationInSec;
 
-    // here we initialize the first log, consider of duration limitation, until should be <= duration
+    // here we initialize the first log, consider of duration limitation, 'until' should be <= 'durationInSec'
     this.logs = [{
       from: timer.getTimeStr(),
       until: timer.getTimeStr(timer.initialTimeOfSecsInADay + Math.min(this.getCurrentProtocol().duration, durationInSec)),
