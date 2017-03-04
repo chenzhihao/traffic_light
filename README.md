@@ -17,10 +17,10 @@ Create a repo on bitbucket/github and provide the link as well as instructions o
 
 * The lights are changing in this loop as these colors and durations:
 
-	 ...-> Red (300s) -> Green () -> Yellow (0.5mins) -> Red (5mins) -> ...
+	 ...-> Red (5mins) -> Green (4.5mins) -> Yellow (0.5min) -> Red (5mins) -> ...
 
 
-* The two lights are orthogonal, which means when Light(N, S) begin to turn from Red to Green, the light(E, W) should begin to turn from Green to Red.
+* The two lights are orthogonal, which means when Light(N, S) begin to turn from Red to Green, the light(E, W) should begin to turn from Green to Red(with Yellow transition).
 
 ## How to run
 
