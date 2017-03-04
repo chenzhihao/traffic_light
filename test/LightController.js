@@ -10,7 +10,7 @@ test('LightController can get current lightProtocol', t => {
   const lightController = new LightController({light, timer});
   t.deepEqual(lightController.getCurrentProtocol(), {
     color: COLORS.GREEN,
-    duration: LIGHT_DURATION.GREEN,
+    durationInSec: LIGHT_DURATION.GREEN,
   });
 });
 
@@ -20,7 +20,7 @@ test('LightController can get next lightProtocol', t => {
   const lightController = new LightController({light, timer});
   t.deepEqual(lightController.getNextProtocol(), {
     color: COLORS.YELLOW,
-    duration: LIGHT_DURATION.YELLOW,
+    durationInSec: LIGHT_DURATION.YELLOW,
   });
 });
 
@@ -31,52 +31,52 @@ test('LightController can get next lightProtocol(loop to first protocol)', t => 
   t.is(lightController.getNextProtocol().color, LIGHT_PROTOCOL_MAPPING[0].color);
 });
 
-test('LightController can execute lightProtocol, from yellow to red', async t => {
+test('LightController can setup timer, the light change from yellow to red', async t => {
   const light = new Light({initialColor: COLORS.YELLOW});
-  const timer = new Timer({initialTimeStr: '00:15:00'});
+  const timer = new Timer({initialTimeStr: '00:15:00', durationInSec: LIGHT_DURATION.YELLOW + 1}); // extra 1 second to let it change
   const lightController = new LightController({light, timer});
 
   // it should be from yellow to red
-  await lightController.executeCurrentProtocol();
+  await timer.start();
+
   t.is(lightController.light.color, COLORS.RED);
 
-  // the yellow light duration is 30s
-  t.is(timer.getTimeStr(), '00:15:30');
+  // the yellow light durationInSec is 31s
+  t.is(timer.getTimeStr(), '00:15:31');
 });
 
-test('LightController can execute lightProtocol, from red to green', async t => {
+test('LightController can setup timer, the light change from red to green', async t => {
   const light = new Light({initialColor: COLORS.RED});
-  const timer = new Timer({initialTimeStr: '00:00:50'});
+  const timer = new Timer({initialTimeStr: '00:00:50', durationInSec: LIGHT_DURATION.RED + 1}); // extra 1 second to let it change
   const lightController = new LightController({light, timer});
 
-  // it should be from red to Green
-  await lightController.executeCurrentProtocol();
+  // it should be from red to green
+  await timer.start();
   t.is(lightController.light.color, COLORS.GREEN);
 
-  // the yellow light duration is 5 mins;
-  t.is(timer.getTimeStr(), '00:05:50');
+  // the yellow light durationInSec is 5 mins;
+  t.is(timer.getTimeStr(), '00:05:51');
 });
 
-test('LightController can execute lightProtocol, from green to yellow', async t => {
+test('LightController can setup timer, the light change from green to yellow', async t => {
   const light = new Light({initialColor: COLORS.GREEN});
-  const timer = new Timer({initialTimeStr: '00:00:40'});
+  const timer = new Timer({initialTimeStr: '00:00:40', durationInSec: LIGHT_DURATION.GREEN + 1}); //extra 1 second to let it change
   const lightController = new LightController({light, timer});
 
-  // it should be from yellow to red
-  await lightController.executeCurrentProtocol(lightController.getNextProtocol());
+  // it should be from green to yellow
+  await timer.start();
   t.is(lightController.light.color, COLORS.YELLOW);
 
-  // the green light duration is 4 mins 30 secs,
-  t.is(timer.getTimeStr(), '00:05:10');
+  // the green light durationInSec is 4 mins 30 secs,
+  t.is(timer.getTimeStr(), '00:05:11');
 });
 
-test('LightController can execute lightProtocol in a loop and log the light color, times', async t => {
+test('LightController can setup timer, the light will change in the correct loop', async t => {
   const light = new Light({initialColor: COLORS.GREEN});
-  const timer = new Timer({initialTimeStr: '00:00:00'});
-  const lightController = new LightController({light, timer, durationInSec: 60 * 20});
+  const timer = new Timer({initialTimeStr: '00:00:00', durationInSec: 60 * 20});// 20 mins
+  const lightController = new LightController({light, timer});
 
-  // it should be from yellow to red
-  await lightController.loop();
+  await timer.start();
 
   t.deepEqual(lightController.logs, [
     {from: '00:00:00', until: '00:04:30', lightColor: COLORS.GREEN},
@@ -86,15 +86,17 @@ test('LightController can execute lightProtocol in a loop and log the light colo
     {from: '00:14:30', until: '00:15:00', lightColor: COLORS.YELLOW},
     {from: '00:15:00', until: '00:20:00', lightColor: COLORS.RED},
   ]);
+
+  t.is(timer.getTimeStr(), '00:20:00');
+  t.is(light.color, COLORS.RED);
 });
 
-test('LightController can execute lightProtocol in a loop and log the light color, times, consider the duration limitation', async t => {
+test('LightController can setup timer, the light will change in the correct loop, consider the durationInSec limitation', async t => {
   const light = new Light({initialColor: COLORS.GREEN});
-  const timer = new Timer({initialTimeStr: '00:00:00'});
-  const lightController = new LightController({light, timer, durationInSec: 60 * 21});
+  const timer = new Timer({initialTimeStr: '00:00:00', durationInSec: 60 * 21}); //21 mins
+  const lightController = new LightController({light, timer});
 
-  // it should be from yellow to red
-  await lightController.loop();
+  await timer.start();
 
   t.deepEqual(lightController.logs, [
     {from: '00:00:00', until: '00:04:30', lightColor: COLORS.GREEN},
@@ -107,13 +109,13 @@ test('LightController can execute lightProtocol in a loop and log the light colo
   ]);
 });
 
-test('LightController can execute lightProtocol in a loop and log the light color, times, consider pass a day', async t => {
+test('LightController can setup timer, the light will change in the correct loop, consider pass a day', async t => {
   const light = new Light({initialColor: COLORS.RED});
-  const timer = new Timer({initialTimeStr: '23:55:30'});
-  const lightController = new LightController({light, timer, durationInSec: 60 * 21});
+  const timer = new Timer({initialTimeStr: '23:55:30', durationInSec: 60 * 21});
+  const lightController = new LightController({light, timer});
 
   // it should be from yellow to red
-  await lightController.loop();
+  await timer.start();
 
   t.deepEqual(lightController.logs, [
     {from: '23:55:30', until: '00:00:30', lightColor: COLORS.RED},

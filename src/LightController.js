@@ -1,35 +1,63 @@
 import {LIGHT_PROTOCOL_MAPPING} from './constants';
 
-import {SECONDS_PER_MINUTE, MINUTE_PER_HOUR, MILLS_PER_SECOND, SECONDS_PER_DAY} from './constants';
+import {SECONDS_PER_DAY} from './constants';
 
 class LightController {
   constructor (options) {
-    const {light, timer, durationInSec = 0.5 * MINUTE_PER_HOUR * SECONDS_PER_MINUTE} = options;
+    const {light, timer} = options;
     if (light == undefined || timer == undefined) {
       throw new Error('Light and Timer are required');
     }
 
     this.light = light;
-
     this.light.onColorChange(() => {
-      this.log();
+      this._addLog();
     });
 
     this.timer = timer;
-    this.durationInSec = durationInSec;
+    this._setTimerLaterTask();
 
-    // here we initialize the first log, consider of duration limitation, 'until' should be <= 'durationInSec'
+    // Initialize the first log. Consider of durationInSec limitation, 'until' should be <= 'durationInSec'
     this.logs = [{
       from: timer.getTimeStr(),
-      until: timer.getTimeStr(timer.initialTimeOfSecsInADay + Math.min(this.getCurrentProtocol().duration, durationInSec)),
+      until: timer.getTimeStr(timer.initialTimeOfSecsInADay + Math.min(this.getCurrentProtocol().durationInSec, timer.durationInSec)),
       lightColor: light.color,
     }];
+
   }
 
+  /**
+   * Set timer 'onLater' callback, so we can change light color on at specify time later
+   * @private
+   */
+  _setTimerLaterTask () {
+    const currentProtocol = this.getCurrentProtocol();
+    const nextProtocol = this.getNextProtocol();
+    const me = this;
+
+    this.timer.onLater(function () {
+      // when the timer is already at then end of durationInSec, we should not add task anymore
+      if (me.timer.getPassedDurationInSec() >= me.timer.durationInSec) {
+        return;
+      }
+
+      me.light.turn(nextProtocol.color);
+      me._setTimerLaterTask();
+    }, currentProtocol.durationInSec)
+  }
+
+  /**
+   * Get current light status info: {color, durationInSec};
+   * @returns {color, durationInSec}
+   */
   getCurrentProtocol () {
     return LIGHT_PROTOCOL_MAPPING.find(item => item.color === this.light.color);
   }
 
+  /**
+   * Get next light status info: {color, durationInSec};
+   * @returns {color, durationInSec}
+   */
   getNextProtocol () {
     const currentColor = this.getCurrentProtocol().color;
     const colors = LIGHT_PROTOCOL_MAPPING.map(item => item.color);
@@ -37,47 +65,15 @@ class LightController {
     return LIGHT_PROTOCOL_MAPPING[nextProtocolIndex];
   }
 
-  async loop () {
-    if (this.timer.getPassedDurationInSec() >= this.durationInSec) {
-      return;
-    }
+  /**
+   * Add a log object like {from: '01:00:00', until:'01:04:30', lightColor: 'green'}
+   * @private
+   */
+  _addLog () {
+    const untilSec = Math.min(this.timer.passedDays * SECONDS_PER_DAY + this.timer.getTimeInSec() + this.getCurrentProtocol().durationInSec, this.timer.durationInSec + this.timer.initialTimeOfSecsInADay);
+    const untilString = this.timer.getTimeStr(untilSec);
 
-    await this.executeCurrentProtocol();
-    return this.loop();
-  }
-
-  log () {
-    let fromString = this.timer.getTimeStr();
-    const untilSec = Math.min(this.timer._passedDays * SECONDS_PER_DAY + this.timer.getTimeInSec() + this.getCurrentProtocol().duration, this.durationInSec + this.timer.initialTimeOfSecsInADay);
-    let untilString = this.timer.getTimeStr(untilSec);
-
-    // here is for edge case consideration,
-    // the last stop time should be in the duration limitation
-    if (this.timer.getPassedDurationInSec() > this.durationInSec) {
-      return;
-    }
-
-    if (fromString === untilString) {
-      return;
-    }
-
-    const lightColor = this.light.color;
-
-    this.logs.push({from: fromString, until: untilString, lightColor});
-  }
-
-  async executeCurrentProtocol () {
-    const currentProtocol = this.getCurrentProtocol();
-    const nextProtocol = this.getNextProtocol();
-
-    const timeOutToTurnColorInSec = currentProtocol.duration;
-
-    return new Promise(resolve => {
-      this.timer.setTimeout(() => {
-        this.light.turn(nextProtocol.color);
-        resolve();
-      }, timeOutToTurnColorInSec * MILLS_PER_SECOND);
-    });
+    this.logs.push({from: this.timer.getTimeStr(), until: untilString, lightColor: this.light.color});
   }
 }
 

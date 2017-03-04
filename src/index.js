@@ -9,20 +9,19 @@ let durationInSec = process.argv[3] || 1800;
 const northSouthLight = new Light({initialColor: COLORS.RED});
 const eastWestLight = new Light({initialColor: COLORS.GREEN});
 
-const northSouthTimer = new Timer({initialTimeStr: startTimeStr});
-const eastWestTimer = new Timer({initialTimeStr: startTimeStr});
+const timer = new Timer({initialTimeStr: startTimeStr, durationInSec});
 
-const northSouthLightController = new LightController({light: northSouthLight, timer: northSouthTimer, durationInSec});
-const eastWestLightController = new LightController({light: eastWestLight, timer: eastWestTimer, durationInSec});
+const northSouthLightController = new LightController({light: northSouthLight, timer: timer});
+const eastWestLightController = new LightController({light: eastWestLight, timer: timer});
 
-Promise.all([northSouthLightController.loop(), eastWestLightController.loop()])
-  .then(function () {
-    console.log('North-South Light:');
-    northSouthLightController.logs.forEach(log => console.log(log));
-    console.log('================');
-    console.log('East-West Light:');
-    northSouthLightController.logs.forEach(log => console.log(log));
-
-  })
+timer.start().then(function () {
+  console.log('Start time:', startTimeStr);
+  console.log('Duration seconds', durationInSec);
+  console.log('================');
+  console.log('North-South Light:');
+  northSouthLightController.logs.forEach(log => console.log(log));
+  console.log('================');
+  console.log('East-West Light:');
+  eastWestLightController.logs.forEach(log => console.log(log));
+})
   .catch(err => console.log(err));
-

@@ -3,7 +3,7 @@ import {COLORS} from './constants';
 export default class Light {
   constructor (options = {}) {
     const {initialColor = COLORS.RED} = options;
-    this.onColorChangeCallbacksMap = new Map();
+    this.onColorChangeCallbacks = [];
 
     /*
      make 'color' observable to implement an easy pub/sub pattern here
@@ -20,7 +20,7 @@ export default class Light {
 
         this._color = newColor;
 
-        this.onColorChangeCallbacksMap.forEach(fn => {
+        this.onColorChangeCallbacks.forEach(fn => {
           fn.apply(this, [this._color]);
         });
       }
@@ -30,12 +30,7 @@ export default class Light {
   }
 
   onColorChange (fn) {
-    this.onColorChangeCallbacksMap.set(fn, fn);
-    return this;
-  }
-
-  offColorChange (fn) {
-    this.onColorChangeCallbacksMap.delete(fn);
+    this.onColorChangeCallbacks.push(fn);
     return this;
   }
 
@@ -55,7 +50,14 @@ export default class Light {
   }
 
   turn (color) {
-    if (Object.values(COLORS).indexOf(color) < 0) {
+    let colors = [];
+    for (let key in COLORS) {
+      if (COLORS.hasOwnProperty(key)) {
+        colors.push(COLORS[key]);
+      }
+    }
+
+    if (colors.indexOf(color) < 0) {
       throw new Error('this color not existing: ' + color);
     }
 
