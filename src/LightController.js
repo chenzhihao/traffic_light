@@ -27,7 +27,7 @@ class LightController {
   }
 
   /**
-   * Set timer 'onLater' callback, so we can change light color on at specify time later
+   * Set timer 'onLater' callback, so we can change light color at specify time later
    * @private
    */
   _setTimerLaterTask () {
@@ -36,7 +36,7 @@ class LightController {
     const me = this;
 
     this.timer.onLater(function () {
-      // when the timer is already at then end of durationInSec, we should not add task anymore
+      // when the timer already exceed 'durationInSec', we should not add task anymore
       if (me.timer.getPassedDurationInSec() >= me.timer.durationInSec) {
         return;
       }
